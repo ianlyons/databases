@@ -1,21 +1,60 @@
+/* global require */
 var mysql = require('mysql');
+var http = require('http');
+var messageHandler = require('./request-handler');
+var httpHelpers = require('./http-helpers');
+var url = require('url');
+var dbhelp = require('./db-helpers');
+
 /* If the node mysql module is not found on your system, you may
- * need to do an "sudo npm install -g mysql". */
+ * need to do an 'sudo npm install -g mysql'. */
 
 /* You'll need to fill the following out with your mysql username and password.
- * database: "chat" specifies that we're using the database called
- * "chat", which we created by running schema.sql.*/
-var dbConnection = mysql.createConnection({
-  user: "",
-  password: "",
-  database: "chat"
+ * database: 'chat' specifies that we're using the database called
+ * 'chat', which we created by running schema.sql.*/
+exports.dbConnection = mysql.createConnection({
+  user: 'root',
+  password: '',
+  database: 'chat'
 });
 
-dbConnection.connect();
+exports.dbConnection.connect();
+
 /* Now you can make queries to the Mysql database using the
  * dbConnection.query() method.
  * See https://github.com/felixge/node-mysql for more details about
  * using this module.*/
 
-/* You already know how to create an http server from the previous
- * assignment; you can re-use most of that code here. */
+var port = 8080;
+
+var ip = '127.0.0.1';
+
+var routes = {
+  '/classes/messages': messageHandler.handler,
+  '/classes/users': messageHandler.handler
+};
+
+var router = function(request, response) {
+  console.log('Serving request type ' + request.method + ' for url ' + request.url);
+
+  var parsedUri = url.parse(request.url);
+
+  var route = routes[parsedUri.pathname];
+  if( route ){
+    route(request, response);
+  } else {
+    httpHelpers.sendResponse(response, null, 404);
+  }
+};
+
+var server = http.createServer(router);
+console.log('Listening on http://' + ip + ':' + port);
+server.listen(port, ip);
+
+exports.addMessage = function(message){
+ exports.dbConnection.query('INSERT INTO `messages` (`id`, `id_users`, `message_text`, `timestamp`, `id_rooms`, `username`) VALUES (NULL, NULL, "' + message.text + '", NULL, NULL, "' + message.username + '"');
+};
+
+
+exports.addMessage({username: 'fred',text: 'hello world'});
+
