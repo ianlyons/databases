@@ -31,7 +31,7 @@ $(function() {
       app.fetch(false);
 
       // Poll for new messages
-      setInterval(app.fetch, 40000);
+      setInterval(app.fetch, 3000);
     },
     send: function(data) {
       app.startSpinner();
@@ -55,10 +55,11 @@ $(function() {
       });
     },
     fetch: function(animate) {
-      $.ajax(app.server + '/classes/room1', {
+      $.ajax(app.server + '/classes/room', {
         contentType: 'application/json',
         success: function(data) {
           console.log('chatterbox: Messages fetched');
+          console.log(data);
 
           // Don't bother if we have nothing to work with
           if (!data.results || !data.results.length) { return; }
@@ -154,7 +155,7 @@ $(function() {
           $username.addClass('friend');
 
         var $message = $('<br><span/>');
-        $message.text(data.text).appendTo($chat);
+        $message.text(data.message_text).appendTo($chat);
 
         // Add the message to the UI
         app.$chats.append($chat);
@@ -218,12 +219,12 @@ $(function() {
     },
     startSpinner: function(){
       $('.spinner img').show();
-      $('form input[type=submit]').attr('disabled', "true");
+      //$('form input[type=submit]').attr('disabled', "true");
     },
 
     stopSpinner: function(){
       $('.spinner img').fadeOut('fast');
-      $('form input[type=submit]').attr('disabled', null);
+      //$('form input[type=submit]').attr('disabled', null);
     }
   };
 }());

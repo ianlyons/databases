@@ -1,12 +1,11 @@
 /* global exports, require */
 var mysql = require('mysql');
+var dbConfig = require('./dbConfig');
 var srv = require('./persistent_server');
 
 //helpers:
-//get messages from db
 //add users
 //add rooms
-//add messages
 //get rooms
 //get users
 
@@ -16,14 +15,22 @@ var srv = require('./persistent_server');
 
 exports.addMessage = function(message){
   var date = new Date().toISOString().slice(0, 19).replace('T', ' ');
-  srv.dbConnection.query('INSERT INTO `messages` (`id`, `id_users`, `message_text`, `timestamp`, `id_rooms`, `username`) VALUES (NULL, NULL, '+srv.dbConnection.escape(message.text)+', "'+ date +'", NULL, '+srv.dbConnection.escape(message.username)+');');
+  dbConfig.dbConnection.query('INSERT INTO `messages` (`id`, `id_users`, `message_text`, `timestamp`, `id_rooms`, `username`) VALUES (NULL, NULL, '+dbConfig.dbConnection.escape(message.text)+', "'+ date +'", NULL, '+dbConfig.dbConnection.escape(message.username)+');');
 };
 
 exports.addUser = function(message){
-  srv.dbConnect.query('INSERT INTO `users`(`id`, `username`) VALUES (NULL'+srv.dbConnection.escape(message.username)+');');
+  dbConfig.dbConnection.query('INSERT INTO `users`(`id`, `username`) VALUES (NULL'+dbConfig.dbConnection.escape(message.username)+');');
 };
 
 exports.addRoom = function(message){
-  srv.dbConnect.query('INSERT INTO `rooms`(`id`, `roomname`) VALUES (NULL'+srv.dbConnection.escape(message.roomname)+');');
+  dbConfig.dbConnection.query('INSERT INTO `rooms`(`id`, `roomname`) VALUES (NULL'+dbConfig.dbConnection.escape(message.roomname)+');');
+};
+
+exports.getMessages = function(cb) {
+  dbConfig.dbConnection.query('SELECT * FROM `messages`;', function(err, rows, fields) {
+    if (err){ throw err; }
+    //return rows;
+    cb(rows);
+  });
 };
 
