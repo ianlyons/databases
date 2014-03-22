@@ -1,4 +1,5 @@
 /* global require */
+
 var mysql = require('mysql');
 var http = require('http');
 var messageHandler = require('./request-handler');
@@ -51,10 +52,4 @@ var server = http.createServer(router);
 console.log('Listening on http://' + ip + ':' + port);
 server.listen(port, ip);
 
-exports.addMessage = function(message){
- exports.dbConnection.query('INSERT INTO `messages` (`id`, `id_users`, `message_text`, `timestamp`, `id_rooms`, `username`) VALUES (NULL, NULL, "' + message.text + '", NULL, NULL, "' + message.username + '"');
-};
-
-
-exports.addMessage({username: 'fred',text: 'hello world'});
-
+//dbhelp.addMessage({username: 'alex "BOSSMAN"', text: 'hello world'});
