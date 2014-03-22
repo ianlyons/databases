@@ -155,7 +155,7 @@ $(function() {
           $username.addClass('friend');
 
         var $message = $('<br><span/>');
-        $message.text(data.message_text).appendTo($chat);
+        $message.text(data.text).appendTo($chat);
 
         // Add the message to the UI
         app.$chats.append($chat);
